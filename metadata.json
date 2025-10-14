@@ -1,0 +1,5 @@
+{
+  "name": "Real Estate Analysis Tool for Dana Sziklay",
+  "description": "An interactive, high-fidelity demonstration simulating an AI-powered real estate analysis workflow. This tool showcases the comparison between manually collected data and AI-discovered insights for property evaluation, commissioned for Ms. Dana Sziklay by Victor H. Torres (Praxis AI).",
+  "requestFramePermissions": []
+}
