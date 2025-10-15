@@ -110,8 +110,10 @@ const Tour: React.FC<TourProps> = ({ steps, isOpen, onClose }) => {
     }
     
     // Boundary checks
-    if(styles.left < 0) styles.left = space;
-    if(styles.top < 0) styles.top = space;
+    // FIX: Cast `styles.left` to `number` before comparison to resolve TypeScript error.
+    if((styles.left as number) < 0) styles.left = space;
+    // FIX: Cast `styles.top` to `number` before comparison to resolve TypeScript error.
+    if((styles.top as number) < 0) styles.top = space;
     if((styles.left as number) + tooltipWidth > window.innerWidth) styles.left = window.innerWidth - tooltipWidth - space;
     if((styles.top as number) + tooltipHeight > window.innerHeight) styles.top = window.innerHeight - tooltipHeight - space;
 

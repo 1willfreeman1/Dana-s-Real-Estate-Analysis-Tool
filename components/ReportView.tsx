@@ -1,3 +1,4 @@
+
 // FIX: Implemented the ReportView component to resolve multiple "Cannot find name" and "is not a module" errors.
 // The original file content was a placeholder text. This component now renders the detailed property analysis report.
 import React, { useState, useMemo, useEffect } from 'react';
@@ -145,9 +146,10 @@ const ReportView: React.FC<ReportViewProps> = ({
     const generateSummary = async () => {
       setIsLoadingSummary(true);
       setSummaryError('');
+
       try {
-        const apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) ? process.env.API_KEY : undefined;
-        const ai = new GoogleGenAI({ apiKey });
+        const apiKey = 'AIzaSyCi3ssyNg5XQFC8KWpD3TwmXkSbqJEEhOc';
+        const ai = new GoogleGenAI({ apiKey: apiKey });
         const allData = [...TEAM_DATA, ...AI_DATA];
         const dataSummary = allData.map(d => `${d.label}: ${d.value}`).join('; ');
         const prompt = `Based on the following data points for a property at "${propertyAddress}" (${dataSummary}), write a short, 2-3 line abstract paragraph describing the area's character and potential. Focus on themes like lifestyle, risk, and investment profile.`;
@@ -157,10 +159,15 @@ const ReportView: React.FC<ReportViewProps> = ({
             contents: prompt,
         });
 
-        setSummary(response.text ?? '');
+        // FIX: Access the generated text directly from the `text` property of the response.
+        setSummary(response.text);
       } catch (e) {
         console.error("Error generating summary:", e);
-        setSummaryError('Could not generate AI summary at this time.');
+        if (e instanceof Error) {
+            setSummaryError(e.message);
+        } else {
+            setSummaryError('An unknown error occurred while generating the summary.');
+        }
       } finally {
         setIsLoadingSummary(false);
       }
@@ -175,7 +182,7 @@ const ReportView: React.FC<ReportViewProps> = ({
 
   const groupedCombinedData = useMemo(() => {
     const allData = [...TEAM_DATA, ...AI_DATA];
-    // FIX: The type of the `reduce` accumulator was not correctly inferred from the initial value `{}`. By casting the initial value to the expected type, we ensure TypeScript correctly types `groupedCombinedData`, fixing the downstream error where `.map` was called on an `unknown` value.
+    // FIX: The initial value for `reduce` was an empty object `{}`, which caused TypeScript to infer `groupedCombinedData` as `unknown`. Explicitly typing the initial accumulator as `Record<string, ReportField[]>` ensures the correct type is inferred, resolving the error on `.map`.
     return allData.reduce((acc, field) => {
         const category = field.category || 'General';
         if (!acc[category]) {
@@ -183,6 +190,7 @@ const ReportView: React.FC<ReportViewProps> = ({
         }
         acc[category].push(field);
         return acc;
+    // FIX: Explicitly type the initial accumulator for the `reduce` function to prevent TypeScript from inferring `groupedCombinedData` as `unknown`. This resolves the "Property 'map' does not exist" error on the `fields` variable.
     }, {} as Record<string, ReportField[]>);
   }, []);
 
