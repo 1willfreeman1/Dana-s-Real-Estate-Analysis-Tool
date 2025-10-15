@@ -9,7 +9,8 @@ const MapEmbed: React.FC<MapEmbedProps> = ({ address }) => {
   const [mapStatus, setMapStatus] = useState<'loading' | 'loaded' | 'failed'>('loading');
   // FIX: Switched to the official Google Maps Embed API and included the API key from environment variables.
   // This is a more robust method that prevents common loading issues in sandboxed environments.
-  const mapSrc = `https://www.google.com/maps/embed/v1/place?key=${process.env.API_KEY}&q=${encodeURIComponent(address)}`;
+  const apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) ? process.env.API_KEY : '';
+  const mapSrc = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${encodeURIComponent(address)}`;
 
   useEffect(() => {
     // Reset status when the address prop changes, in case we are viewing a different report.

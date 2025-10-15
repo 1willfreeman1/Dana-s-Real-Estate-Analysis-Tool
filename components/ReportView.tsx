@@ -146,7 +146,8 @@ const ReportView: React.FC<ReportViewProps> = ({
       setIsLoadingSummary(true);
       setSummaryError('');
       try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        const apiKey = (typeof process !== 'undefined' && process.env && process.env.API_KEY) ? process.env.API_KEY : undefined;
+        const ai = new GoogleGenAI({ apiKey });
         const allData = [...TEAM_DATA, ...AI_DATA];
         const dataSummary = allData.map(d => `${d.label}: ${d.value}`).join('; ');
         const prompt = `Based on the following data points for a property at "${propertyAddress}" (${dataSummary}), write a short, 2-3 line abstract paragraph describing the area's character and potential. Focus on themes like lifestyle, risk, and investment profile.`;
